@@ -7,7 +7,12 @@
     private static $dbConnexion = null;
     //definire le construct
     private function __construct(){
-        self::$dbConnexion = new PDO("mysql:host=localhost;port=3307;dbname=task_manager","root","");
+        try{
+            self::$dbConnexion = new PDO("mysql:host=localhost;port=3307;dbname=task_manager","root","");
+           
+        }catch(PDOException $e){
+            echo $e->getMessage();
+        }
 
     }
 

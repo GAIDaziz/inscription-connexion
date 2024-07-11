@@ -8,6 +8,10 @@
 
     <div class="w-50 mx-auto">
     <form action ="http://localhost/task_manager/?url=login"  method="post" >
+
+        <?php if (isset($_SESSION["error_message"])){?>
+        <P> <?= $_SESSION["error_message"] ?> </p>
+        <?php } ?>
         
 <!--EMAIL-->
         <div class="mb-3">

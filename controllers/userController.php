@@ -63,15 +63,56 @@ class UserController{
         else{
             //appele du model userModel
 
-        UserModel::inscription($this->lastName,$this->firstName,$this->email,$this->password);       
-     }
-}
+        UserModel::inscription($this->lastName,$this->firstName,$this->email,$this->password);  
+            header ("Location: http://localhost/task_manager/?url=login");    
+        }
+    }
 
 
 
     //methode pour connecter le user
     public static function login($email, $password){
-        UserModel::connexion ($email, $password);
+       $user = UserModel::connexion ($email, $password);
 
+    
+
+        if(empty($user)){
+    
+            $_SESSION['error_message']="login incorect!";
+            header ("Location: http://localhost/task_manager/?url=login");
+  
+
+       }else{
+           if(password_verify($password, $user['password'])){
+               unset($user['password']);
+               //tout ce oasse bien donc on cree les session
+               $_SESSION["user_info"]= $user ;
+               unset($_SESSION['error_message']);
+
+               header ("Location: http://localhost/task_manager/?url=dashboard");
+        
+
+           }else{
+               
+               $_SESSION['error_message']="mot de pass incorect!";
+            //    header ("Location: http://localhost/task_manager/?url=login");
+
+
+           }
+       
+       }  
+    }
+
+
+    //methode log out
+    public static function logout(){
+        session_destroy();
+        header ("Location: http://localhost/task_manager/?url=login");
+        
+    }
+     //methode pour recuperer la liste des etulisateurs
+    public static function getUserlist(){
+        $list = UserModel::userlist();
+        return $list;
     }
 }

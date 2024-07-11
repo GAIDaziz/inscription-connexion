@@ -4,7 +4,7 @@ require_once "includes/dbConnexion.php";
 class UserModel{
     public static function inscription($lastName,$firstName,$email,$password){
         //etablire conexion
-        $dbConnect = DbConnexion::dblog();
+        $dbConnect = DbConnexion::dbLog();
 
         //preparer la requette
         $request=$dbConnect->prepare(
@@ -17,10 +17,15 @@ class UserModel{
         );
 
         //executer la requette
+        
         $request ->bindParam ('lastname',$lastName);
+        
         $request ->bindParam ('firstname',$firstName);
+       
         $request ->bindParam ('email',$email);
+       
         $request ->bindParam ('password',$password);
+
 
         try{
             $request->execute();
@@ -38,27 +43,28 @@ class UserModel{
         //preparer la requete
         $request = $dbConnect->prepare("SELECT * FROM users WHERE email = :mail");
         $request->bindParam(":mail",$email);
+
         //executer la requete
-        $request ->execute();
-        //recuperer le resultat dans un tableau
-        $user=$request->fetch();
-        if (empty($user)){
-             header ("Location: http://localhost/task_manager/?url=login");
-        }else{
-            if(password_verify($password, $user['password'])){
-                unset($user['password']);
-                //tout ce oasse bien donc on cree les session
-                $_SESSION["user_info"]= $user ;
-                header ("Location: http://localhost/task_manager/?url=dashboard");
-         
-
-            }else{
-                header ("Location: http://localhost/task_manager/?url=login");
-                $_SESSION['error_message']="login ou mot de pass incorect!";
-
-
-            }
-        
+        try{
+            $request->execute();
+            $user=$request->fetch();
+            
+            return $user;
+        }catch(PDOException $e){
+            echo $e->getMessage();
         }
+    }
+    public static function userlist(){
+        //etablir connexion avec la bd
+        $dbConnect = DbConnexion::dbLog();
+//preparer la requete
+        
+        $request = $dbConnect->prepare("SELECT * FROM users ");
+        //execute requette
+        $request->execute();
+//recupere le resultat dans un tableau
+        $user=$request->fetchAll(PDO::FETCH_ASSOC);
+        return $user;
+
     }
 }

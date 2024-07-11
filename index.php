@@ -2,6 +2,7 @@
 session_start();
 
 require_once "controllers/userController.php";
+require_once "controllers/teamController.php";
 
 
 
@@ -21,7 +22,7 @@ switch($url){
         $user->register();
         }
         else{require_once "views/register.php";}
-            break;
+        break;
 
     case "login";
         if ($_SERVER["REQUEST_METHOD"]=="POST"){
@@ -29,10 +30,36 @@ switch($url){
             $password = $_POST['mdp'];
             UserController::login($email, $password);
 
-        }   else {
-            require_once "views/login.php";
+        }else {
+            if (isset($_session["user_info"])){
+                require_once "views/dashboard.php";
+            }else{
+              require_once "views/login.php";   
+            }
         }  
         break;   
+
+        case "dashboard":
+            require_once "views/dashboard.php";
+            break;
+        
+        case "logout":
+            UserController::logout();
+            break; 
+            
+            
+        case "add_team":
+            if($_SERVER["REQUEST_METHOD"] == "POST"){
+                $teamName = $_POST ['nom'];
+                $teamMembers= $_POST['members'];
+                TeamController::addTeam( $teamName, $teamMembers);
+            }else{
+            $listUser = UserController::getUserList();
+            require_once "views/add_team.php";
+            }
+            break;
+         
+
         default:
             echo "404 cette page n'éxiste pas";    
 
